@@ -1,0 +1,22 @@
+#+title:   for k8s-cluster-lan
+#+author: asajaroff@users.noreply.github.com
+#+date:   2022-03-31
+
+* Node configuration
+
+Check
+
+* TODO New node steps
+- Burn image to SD storage
+- Start the machine
+- Once the node is connected into the network, ssh into it
+#+begin_src bash
+sudo apt update --yes
+sudo apt install software-properties-common --yes
+sudo add-apt-repository --yes --update ppa:ansible/ansible
+sudo apt install ansible --yes
+#+end_src
+- Run the `standard-security` runbook
+  This will disable SSH password and root user
+- Run the `k8s-node-security` runbook
+  This will give more security
