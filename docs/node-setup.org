@@ -4,12 +4,10 @@
 
 * Node configuration
 
-Check
-
-* TODO New node steps
+** TODO New node steps CHECKLIST #TODO
 - [ ] Burn image to SD storage
 - [ ] Start the machine
-- [ ] Once the node is connected into the network, ssh into it
+- Once the node is connected into the network, ssh into it
 #+begin_src bash
 sudo apt update --yes
 sudo apt install software-properties-common --yes
