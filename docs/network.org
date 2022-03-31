@@ -1,0 +1,15 @@
+#+title:  network.org
+#+author: asajaroff@.github.com
+#+date:   2022-03-31
+
+* Network
+The goal of this document is to register architectural network desitions.
+
+This document will end up having at least:
+**  LAN
+Divided into subnets:
+*** 192.168.1.1/24
+**  Internet config
+*** WAN1
+*** WAN2
+**  VPN

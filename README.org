@@ -1,0 +1,31 @@
+#+title:  README for k8s-cluster-lan
+#+author: asajaroff@.github.com
+#+date:   2022-03-31
+
+* k8s-cluster-lan
+A collection of files to set up my local kubernetes cluster with a mix of both `arm64` and `amd64` architectures.
+
+* Some examples for future reference:
+
+**  Code example
+#+begin_src python
+from pathlib import Path
+cssRatios = []
+for css_min in Path("resources/style").glob("*.min.css"):
+    css = css_min.with_suffix('').with_suffix('.css')
+    cssRatios.append([css.name,
+    "{:.0f}% minified ({:4.1f} KiB)".format( 100 *
+                      css_min.stat().st_size / css.stat().st_size,
+                      css_min.stat().st_size / 1000)])
+return cssRatios
+#+end_src
+
+** TODO Check CSS on main pages
+
+- Burn image into SDs
+- Install an OS in the intel based computer
+- Setup networking configs and defitions (Go through [[file:docs/network.org)
+- Create ansible playbook for handling stuff
+- Install
+- Manual
+- Contribute
