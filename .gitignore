@@ -1,2 +1,1 @@
-**build-**.log
-containers/sample-arm-container/**.log
+containers/**/**.log
