@@ -1,8 +1,8 @@
-#+title:   for k8s-cluster-lan
+#+title:   Node configuration
 #+author: asajaroff@users.noreply.github.com
 #+date:   2022-03-31
 
-* Node configuration
+* Checklist
 
 ** TODO New node steps CHECKLIST
 - [ ] Burn image to SD storage
@@ -22,7 +22,7 @@ sudo apt install ansible --yes
 - [ ] Run the `k8s-node-security` runbook
   This will give more security
 
-
+* Operative Systems
 ** Rocky Linux
 Connect through SSH to the machine
 #+being_src sh
@@ -56,6 +56,12 @@ ssh-keygen -t ed25519 -f ~/.ssh/nodes.local.lan -C "galera@local.lan_Kubernetes"
 #+begin_src shell
 sudo systemctl enable sshd --now
 sudo systemctl status sshd.service
+
+# Give correct permissions to authorized users
+mkdir ${HOME}/.ssh
+chmod 700 ~/.ssh
+touch ${HOME}/.ssh/authorized_keys
+chmod 600 ${HOME}/authorized_keys
 #+end_src
 
 *** Install container tools
@@ -64,5 +70,12 @@ sudo dnf install podman buildah -y
 #+end_src
 ** SSH Keys Creation
 #+begin_src sh
+# Create key
 ssh-keygen -t ed25519 -f ~/.ssh/nodes.local.lan -C "galera@local.lan_Kubernetes"
+ssh-copy-id rocky@${IP_ADDRESS}
+
+#
+chmod 600 /home/rocky/.ssh/authorized_keys
+chmod 700 ~/.ssh
+
 #+end_src
