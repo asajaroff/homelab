@@ -1,0 +1,14 @@
+* Ansible container
+
+** Usage
+Create an alias
+#+begin_src sh
+alias ansible='sudo podman run \
+    docker.io/asajaroff/ansible-bin:0.0.1 \
+    -v ${PWD}:/home/ansible/workspace'
+#+end_src
+
+Forengi profit!
+#+begin_src sh
+ansible command
+#+end_src

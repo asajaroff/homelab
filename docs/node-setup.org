@@ -4,11 +4,11 @@
 
 * Node configuration
 
-** TODO New node steps CHECKLIST #TODO
+** TODO New node steps CHECKLIST
 - [ ] Burn image to SD storage
 - [ ] Start the machine
 - Once the node is connected into the network, ssh into it
-#+begin_src bash
+#+begin_src sh
 sudo apt update --yes
 sudo apt install software-properties-common --yes
 sudo add-apt-repository --yes --update ppa:ansible/ansible
