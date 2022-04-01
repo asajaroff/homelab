@@ -14,7 +14,55 @@ sudo apt install software-properties-common --yes
 sudo add-apt-repository --yes --update ppa:ansible/ansible
 sudo apt install ansible --yes
 #+end_src
+
+#+RESULTS:
+
 - [ ] Run the `standard-security` runbook
   This will disable SSH password and root user
 - [ ] Run the `k8s-node-security` runbook
   This will give more security
+
+
+** Rocky Linux
+Connect through SSH to the machine
+#+being_src sh
+ssh rocky@${RASPBERRY_IP_ADDRESS}
+# Default password is `rockylinux`
+#+end_src sh
+
+Once you're in, we need to do a few things
+*** Install updates and Ansible
+#+begin_src sh
+sudo rootfs-expand # Expand filesystem so that is uses the hole available disk
+sudo dnf update -y
+
+# Set hostname
+export NODE=01
+sudo hostnamectl set-hostname "k8s-node-${NODE}.local.lan" --static
+sudo hostnamectl set-hostname "K8S Node ${NODE}" --pretty
+sudo reboot
+
+# Install ansible
+sudo dnf install -y epel-release
+sudo dnf install ansible -y
+#+end_src
+
+*** Create automations user
+#+begin_src sh
+ssh-keygen -t ed25519 -f ~/.ssh/nodes.local.lan -C "galera@local.lan_Kubernetes"
+#+end_src
+
+*** Setup SSH server
+#+begin_src shell
+sudo systemctl enable sshd --now
+sudo systemctl status sshd.service
+#+end_src
+
+*** Install container tools
+#+begin_src sh
+sudo dnf install podman buildah -y
+#+end_src
+** SSH Keys Creation
+#+begin_src sh
+ssh-keygen -t ed25519 -f ~/.ssh/nodes.local.lan -C "galera@local.lan_Kubernetes"
+#+end_src

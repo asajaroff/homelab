@@ -1,9 +1,9 @@
 nodes:
   hosts:
-    node-1:
-      ansible_host: 192.168.1.184
+    node-01:
+      ansible_host: 192.168.1.190
   vars:
-    ansible_user: galera
+    ansible_user: rocky
 
 
 
