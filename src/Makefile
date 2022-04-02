@@ -1,13 +1,23 @@
-
-DOCKER_MOUNT = $(PWD):/home/ansible-user/workdir
+DOCKER_BIN				?= podman
+DOCKER_MOUNT 			:= $(PWD):/home/ansible-user/workdir
+DOKCER_ANSIBLE_BIN 		:=  podman run -v $(DOCKER_MOUNT) -v ${HOME}/.ssh:/home/ansible-user/.ssh localhost/asajaroff/ansible-bin:0.0.1
+# TODO Make ansible properly work in a container error=(provided hosts list is empty, only localhost is available. Note that the implicit localhost does not match 'all')
 # ANSIBLE_BIN = podman run -v $(DOCKER_MOUNT) -v ${HOME}/.ssh:/home/ansible-user/.ssh localhost/asajaroff/ansible-bin:0.0.1
-ANSIBLE_BIN = ansible
+ANSIBLE_BIN 			:= ansible
+ANSIBLE_PLAYBOOK_BIN 	:= ansible-playbook
+INVENTORY 				?= inventory.yaml
 
-run:
-	$(ANSIBLE_BIN) all -m ping -i inventory.yaml
+.DEFAULT_GOAL: help
+.PHONY: all
 
-ping:
-	$(ANSIBLE_BIN) all -m ping -i inventory.yaml
+help:
+	@awk 'BEGIN {FS = ":.*##"; printf "Usage: make \033[36m<target>\033[0m\n"} /^[a-zA-Z_-]+:.*?##/ { printf "  \033[36m%-10s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
 
-list:
-	$(ANSIBLE_BIN) all --list-hosts -i inventory.yaml
+init-rocky: ## Setup Rocky from scratch
+	$(ANSIBLE_PLAYBOOK_BIN) playbook.yaml \
+		-i inventory.yaml
+
+ping: ## Ping all hosts on the inventory file
+	$(ANSIBLE_BIN) all \
+		-i $(INVENTORY) \
+		-m ping

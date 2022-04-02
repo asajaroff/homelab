@@ -1,36 +1,34 @@
 ---
-- name: Test Playbook
+- name: Global configurations and security features Playbook
   hosts: nodes
-  remote_user: galera
+  remote_user: rocky
 
   tasks:
-  - name: Update package cache
-    ansible.builtin.apt:
-      update_cache: yes
-    become: yes
+  - name: DNF Update all
+    dnf:
+      name: "*"
+      state: latest
 
-  - name: Install common software
-    ansible.builtin.apt:
+  - name: DNF Basic tools
+    dnf:
       update_cache: no
       pkg:
         - curl
         - net-tools
-        - dnsutils
+        - bind-utils
+        - jq
+        - telnet
+        - netcat
     become: yes
 
-  - name: Remove useless packages from the cache
-    ansible.builtin.apt:
-      autoclean: yes
+  - name: DNF Containers
+    dnf:
+      pkg:
+        - podman
+        - buildah
     become: yes
 
-
-  - name: Remove dependencies that are no longer required
-    ansible.builtin.apt:
+  - name: DNF Autoremove
+    dnf:
       autoremove: yes
     become: yes
-
-  - name: Run the equivalent of "apt-get clean" as a separate step
-    apt:
-      clean: yes
-    become: yes
-
