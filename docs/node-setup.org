@@ -68,14 +68,10 @@ chmod 600 ${HOME}/authorized_keys
 #+begin_src sh
 sudo dnf install podman buildah -y
 #+end_src
-** SSH Keys Creation
+
+* SSH Keys Creation
 #+begin_src sh
 # Create key
 ssh-keygen -t ed25519 -f ~/.ssh/nodes.local.lan -C "galera@local.lan_Kubernetes"
-ssh-copy-id rocky@${IP_ADDRESS}
-
-#
-chmod 600 /home/rocky/.ssh/authorized_keys
-chmod 700 ~/.ssh
-
+ssh-copy-id rocky@${IP_ADDRESS} ~/.ssh.nodes.local.lan.pub
 #+end_src
