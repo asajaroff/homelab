@@ -13,11 +13,21 @@ INVENTORY 				?= inventory.yaml
 help:
 	@awk 'BEGIN {FS = ":.*##"; printf "Usage: make \033[36m<target>\033[0m\n"} /^[a-zA-Z_-]+:.*?##/ { printf "  \033[36m%-10s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
 
-init-rocky: ## Setup Rocky from scratch
+init: ## Setup boxes from scratch
 	$(ANSIBLE_PLAYBOOK_BIN) playbook.yaml \
 		-i inventory.yaml
+
+init-global-security: ## Setup security features
+	$(ANSIBLE_PLAYBOOK_BIN) playbook.yaml \
+		-i inventory.yaml
+
+init-containers: ## Provide Containers capabilities
 
 ping: ## Ping all hosts on the inventory file
 	$(ANSIBLE_BIN) all \
 		-i $(INVENTORY) \
 		-m ping
+
+shutdown: ## Setup boxes from scratch
+	$(ANSIBLE_PLAYBOOK_BIN) shutdown.yaml \
+		-i inventory.yaml

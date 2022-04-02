@@ -1,0 +1,7 @@
+---
+- name: Power off playbook
+  hosts: nodes
+  tasks:
+    - name: shutdown
+      command: /sbin/shutdown -h now
+      become: yes
