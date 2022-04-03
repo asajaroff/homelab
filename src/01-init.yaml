@@ -26,18 +26,18 @@
   - name: Stop ssh service
     become: yes
     ansible.builtin.service:
-      name: ssh
+      name: sshd
       state: stopped
 
   - name: Start ssh service
     become: yes
     ansible.builtin.service:
-      name: ssh
+      name: sshd
       state: started
 
-  - name: Disable firewalld
+  - name: Stop and disable firewalld
     become: yes
     ansible.builtin.service:
       name: firewalld
-      enabled: no
       state: stopped
+      enabled: no

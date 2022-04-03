@@ -2,6 +2,10 @@ nodes:
   hosts:
     node-01:
       ansible_host: 192.168.1.50
+    node-02:
+      ansible_host: 192.168.1.51
+    node-03:
+      ansible_host: 192.168.1.52
   vars:
     ansible_user: rocky
-#    ansible_become_password: rockylinux
+    ansible_become_password: rockylinux

@@ -1,0 +1,34 @@
+---
+- name: Global configurations and security features Playbook
+  hosts: nodes
+  remote_user: rocky
+
+  tasks:
+  - name: DNF Update all
+    dnf:
+      name: "*"
+      state: latest
+
+  - name: DNF Basic tools
+    dnf:
+      update_cache: no
+      pkg:
+        - curl
+        - net-tools
+        - bind-utils
+        - jq
+        - telnet
+        - nmap-ncat
+    become: yes
+
+  - name: DNF Containers
+    dnf:
+      pkg:
+        - podman
+        - buildah
+    become: yes
+
+  - name: DNF Autoremove
+    dnf:
+      autoremove: yes
+    become: yes

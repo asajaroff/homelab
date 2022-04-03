@@ -47,6 +47,20 @@ sudo dnf install -y epel-release
 sudo dnf install ansible -y
 #+end_src
 
+*** Allow ${USER} to run sudo and journalctl without password
+#+begin_src shell
+EDITOR=vim visudo
+# Uncomment following line:
+%wheel	ALL=(ALL)	NOPASSWD: ALL
+#+end_src
+
+*** Disable firewalld
+#+begin_src shell
+sudo systemctl disable firewalld --now
+sudo systemctl disable nm-cloud-setup.service nm-cloud-setup.timer
+sudo reboot
+#+end_src
+
 *** Create automations user
 #+begin_src sh
 ssh-keygen -t ed25519 -f ~/.ssh/nodes.local.lan -C "galera@local.lan_Kubernetes"
@@ -64,19 +78,10 @@ touch ${HOME}/.ssh/authorized_keys
 chmod 600 ${HOME}/authorized_keys
 #+end_src
 
-*** Allow ${USER} to run sudo and journalctl without password
-#+begin_src shell
-EDITOR=vim visudo
-
-# Uncomment following line:
-%wheel	ALL=(ALL)	NOPASSWD: ALL
-#+end_src
 
 
 *** Install container tools
-#+begin_src sh
-sudo dnf install podman buildah -y
-#+end_src
+Run `make init-global-security`
 
 * SSH Keys Creation
 #+begin_src sh

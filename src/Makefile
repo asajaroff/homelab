@@ -13,12 +13,12 @@ INVENTORY 				?= inventory.yaml
 help:
 	@awk 'BEGIN {FS = ":.*##"; printf "Usage: make \033[36m<target>\033[0m\n"} /^[a-zA-Z_-]+:.*?##/ { printf "  \033[36m%-10s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
 
-init: ## Setup boxes from scratch
-	$(ANSIBLE_PLAYBOOK_BIN) playbook.yaml \
+init: ## Setup security features
+	$(ANSIBLE_PLAYBOOK_BIN) 01-init.yaml \
 		-i inventory.yaml
 
-init-global-security: ## Setup security features
-	$(ANSIBLE_PLAYBOOK_BIN) playbook.yaml \
+install: ## Setup boxes from scratch
+	$(ANSIBLE_PLAYBOOK_BIN) 02-software.yaml \
 		-i inventory.yaml
 
 init-containers: ## Provide Containers capabilities
