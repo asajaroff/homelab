@@ -1,9 +1,30 @@
 ---
-- name: Global configurations and security features Playbook
-  hosts: nodes
+- name: Global configurations and security features for new nodes
+  hosts: all
   remote_user: rocky
+  vars:
+    ip_map:
+      192.168.1.50: master-1.local.lan
+      192.168.1.51: node-1.local.lan
+      192.168.1.52: node-2.local.lan
 
   tasks:
+  - name: Expand volumes
+    become: yes
+    ansible.builtin.shell: sudo rootfs-expand
+
+  # - name: Set authorized key taken from file
+  #   ansible.posix.authorized_key:
+  #     user: rocky
+  #     state: present
+  #     key: "{{ lookup('file', '/home/galera/.ssh/nodes.local.lan.pub') }}"
+
+  - name: Change the hostname
+    ansible.builtin.hostname:
+      name: "{{ ip_map[ansible_default_ipv4.address] }}"
+      use: systemd
+    when: ansible_default_ipv4.address in ip_map.keys()
+
   - name: DNF Update all
     dnf:
       name: "*"
@@ -41,3 +62,4 @@
       name: firewalld
       state: stopped
       enabled: no
+
