@@ -3,7 +3,7 @@ k3s:
     master-01:
       ansible_host: 192.168.1.50
     node-02:
-      ansible_host: 192.168.1.51
+      ansible_hosjt: 192.168.1.51
     node-03:
       ansible_host: 192.168.1.52
   vars:

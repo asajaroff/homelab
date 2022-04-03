@@ -1,6 +1,7 @@
 ---
 - name: Global configurations and security features for new nodes
   hosts: all
+  strategy: free
   remote_user: rocky
   vars:
     ip_map:
@@ -9,21 +10,35 @@
       192.168.1.52: node-2.local.lan
 
   tasks:
+  # DEBUG
+  # - name: Print all available facts
+  #   ansible.builtin.debug:
+  #     var: ansible_facts
+
   - name: Expand volumes
     become: yes
-    ansible.builtin.shell: sudo rootfs-expand
-
-  # - name: Set authorized key taken from file
-  #   ansible.posix.authorized_key:
-  #     user: rocky
-  #     state: present
-  #     key: "{{ lookup('file', '/home/galera/.ssh/nodes.local.lan.pub') }}"
+    ignore_errors: yes
+    ansible.builtin.shell: rootfs-expand
 
   - name: Change the hostname
     ansible.builtin.hostname:
       name: "{{ ip_map[ansible_default_ipv4.address] }}"
       use: systemd
     when: ansible_default_ipv4.address in ip_map.keys()
+
+  - name: Make sure we have a 'wheel' group
+    group:
+      name: wheel
+      state: present
+
+  - name: Allow 'wheel' group to have passwordless sudo
+    lineinfile:
+      dest: /etc/sudoers
+      state: present
+      regexp: '^%wheel'
+      line: '%wheel ALL=(ALL) NOPASSWD: ALL'
+      validate: 'visudo -cf %s'
+
 
   - name: DNF Update all
     dnf:
@@ -63,3 +78,26 @@
       state: stopped
       enabled: no
 
+  - name: Enable cgroup via boot commandline if not already enabled for Centos
+    lineinfile:
+      path: /boot/cmdline.txt
+      backrefs: yes
+      regexp: '^((?!.*\bcgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory\b).*)$'
+      line: '\1 cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory'
+    notify:
+      - Restart machines
+      - Wait for the machine to come back online
+
+  handlers:
+    - name: Restart machines
+      ignore_errors: yes
+      command: /sbin/shutdown -r now
+      become: yes
+      when: ansible_os_family in ['RedHat', 'Rocky']
+
+    - name: Wait for the machine to come back online
+      wait_for_connection:
+        connect_timeout: 60
+        sleep: 5
+        delay: 5
+        timeout: 300
