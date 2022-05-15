@@ -1,0 +1,21 @@
+#+title:  Traefik Ingress Controller setup
+#+author: asajaroff@users.github.com
+#+date:   <2022-05-07 Sat>
+
+* Steps
+1. Make sure the Traefik ingress controller is up and running.
+   For the local network listening at 192.168.100.1/24, we can run:
+   #+BEGIN_SRC shell
+kubectl get svc traefik -n kube-system -o jsonpath='{.status.loadBalancer.ingress}'
+   #+END_SRC
+
+   #+RESULTS:
+   | ip":"192.168.100.2 | ip":"192.168.100.6 | ip":"192.168.100.7 |
+
+2. Enable port forwarding to the ports exposed by the Ingress Controller
+   #+BEGIN_SRC shell
+kubectl get svc traefik -n kube-system -o jsonpath='{.spec.ports[*].nodePort}'
+   #+END_SRC
+
+   #+RESULTS:
+   : 30207 32073

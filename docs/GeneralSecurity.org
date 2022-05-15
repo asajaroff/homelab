@@ -1,0 +1,43 @@
+#+TITLE: UNIX security standards
+
+* Automation and general configuration
+** TODO find a way to manage:
+*** Bare metal
+*** Raspberry
+*** Xen server VMs
+*** Kubernetes managment overal
+*** Virtual servers and networks
+*** pfSense
+*** DNS
+
+* General
+- MISSING:
+  - SSH allow only non-root login with unprivileged user, escalete from there.
+  - Standard port for SSH servers
+
+*** TODO Generate sshd_config template
+*** TODO Automate user creation process
+*** TODO Ansible script for user creation for Generic OS
+
+
+* Softare
+Install on all:
+- [ ] ssh
+- [ ] neovim or neovim
+- [ ] git
+- [ ] yq
+- [ ] net-tools
+- [ ] build-essentials
+- [ ] dns-utils
+- [ ] cloud-clis
+  - [ ] aws
+  - [ ] azure
+  - [ ] gcp
+  - [ ] linode
+
+* Shell environment
+ - MISSING:
+*** TODO Generate repo for homelab dotfiles (root and user)
+**** TODO Bash configuration files
+
+* Documentation

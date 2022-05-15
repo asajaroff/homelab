@@ -21,7 +21,6 @@ return cssRatios
 #+end_src
 
 ** TODO Check CSS on main pages
-
 - Burn image into SDs
 - Install an OS in the intel based computer
 - Setup networking configs and defitions (Go through [[file:docs/network.org)
