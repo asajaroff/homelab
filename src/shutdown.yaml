@@ -1,6 +1,6 @@
 ---
 - name: Power off playbook
-  hosts: nodes
+  hosts: k3s
   tasks:
     - name: shutdown
       command: /sbin/shutdown -h now

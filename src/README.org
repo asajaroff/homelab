@@ -1,0 +1,8 @@
+* Prerequisites
+**  SSH key managment
+ 1. Add the ssh-key to the agent
+ 2. Make that the [[file:ansible.cfg][ansible config file]] has the right names and IP addresses
+
+**  Ansible versions and Python stuff...
+Currently using Ansible 2.9
+*
