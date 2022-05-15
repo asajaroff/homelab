@@ -1,0 +1,16 @@
+#+title:   k3s Node configuration
+#+author: asajaroff@users.noreply.github.com
+#+date:   2022-05-15
+
+* Checklist
+** Install and configure node according to [[file:GeneralSecurity.org][general security]] guidelines.
+** Fetch the cluster token node from the Master instance:
+#+begin_src shell
+ssh -i ~/.ssh/nodes.k8s.local rocky@192.168.100.2 -- sudo cat /var/lib/rancher/k3s/server/node-token
+#+end_src
+3. Launch the node
+#+begin_src shell
+export NODE_IP=192.168.100.11
+export K3S_MASTER_IP=192.168.100.2
+ssh -i ~/.ssh/nodes.k8s.local rocky@${NODE_IP} -- curl -sfL https://get.k3s.io | K3S_URL=https://${K3S_MASTER_IP}:6443 K3S_TOKEN=${K3S_TOKEN} sh -
+#+end_src
