@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: bastion
+  labels:
+    role: bastion-pod
+spec:
+  containers:
+    - name: bastion
+      image: asajaroff/kubastion:v1.1.0
+  nodeSelector:
+    kubernetes.io/arch: amd64

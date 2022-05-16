@@ -35,6 +35,34 @@ Install on all:
   - [ ] gcp
   - [ ] linode
 
+** Adding users
+#+begin_src
+useradd adminera \
+    --uid 1001 \
+    --create-home \
+    --shell /bin/bash \
+    --user-group \
+    --groups wheel,adm,bin,disk
+#+end_src
+
+** Closing the box
+- Create administrative non-root user
+#+begin_src
+useradd adminera \
+    --uid 1001 \
+    --create-home \
+    --shell /bin/bash \
+    --user-group \
+    --groups wheel,adm,bin,disk
+#+end_src
+- Add authorized key to user
+  #+begin_src shell
+  mkdir -p ~/.ssh && chmod 700 ~/.ssh && touch ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys && echo "ssh-rsa KEYGOESHERE user@remotehost or note" >> ~/.ssh/authorized_keys
+  #+end_src
+
+sudo iptables -I INPUT -p tcp --dport 22 -s 192.168.20.0/24 -j ACCEPT
+sudo iptables -I INPUT -p tcp --dport 22 -s 192.168.20.0/24 -j ACCEPT
+
 * Shell environment
  - MISSING:
 *** TODO Generate repo for homelab dotfiles (root and user)

@@ -78,8 +78,6 @@ touch ${HOME}/.ssh/authorized_keys
 chmod 600 ${HOME}/authorized_keys
 #+end_src
 
-
-
 *** Install container tools
 Run `make init-global-security`
 
