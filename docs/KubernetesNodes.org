@@ -5,12 +5,22 @@
 * Checklist
 ** Install and configure node according to [[file:GeneralSecurity.org][general security]] guidelines.
 ** Fetch the cluster token node from the Master instance:
-#+begin_src shell
-ssh -i ~/.ssh/nodes.k8s.local rocky@192.168.100.2 -- sudo cat /var/lib/rancher/k3s/server/node-token
+   #+begin_src shell
+     export K3S_TOKEN="$(ssh -i ~/.ssh/nodes.k8s.local rocky@192.168.100.2 -- sudo cat /var/lib/rancher/k3s/server/node-token)"
 #+end_src
 3. Launch the node
 #+begin_src shell
-export NODE_IP=192.168.100.11
+export NODE_IP=192.168.100.6
 export K3S_MASTER_IP=192.168.100.2
-ssh -i ~/.ssh/nodes.k8s.local rocky@${NODE_IP} -- curl -sfL https://get.k3s.io | K3S_URL=https://${K3S_MASTER_IP}:6443 K3S_TOKEN=${K3S_TOKEN} sh -
+ssh -i ~/.ssh/nodes.k8s.local rocky@${NODE_IP} -- "curl -sfL https://get.k3s.io | K3S_URL=https://${K3S_MASTER_IP}:6443 K3S_TOKEN=${K3S_TOKEN} sh -"
 #+end_src
+
+** Enable cgroup memory
+   Add the following bit at the end of the ~/boot/cmdline.txt~ file.
+   #+BEGIN_SRC shell
+   cgroup_memory=1 cgroup_enable=memory
+   #+END_SRC
+
+
+* User managment
+-

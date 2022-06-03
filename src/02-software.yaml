@@ -1,6 +1,6 @@
 ---
 - name: Global configurations and security features Playbook
-  hosts: nodes
+  hosts: k3s
   remote_user: rocky
 
   tasks:

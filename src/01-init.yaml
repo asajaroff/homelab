@@ -4,9 +4,9 @@
   remote_user: rocky
   vars:
     ip_map:
-      192.168.1.50: master-1.local.lan
-      192.168.1.51: node-1.local.lan
-      192.168.1.52: node-2.local.lan
+      192.168.100.2: master-1.local.lan
+      192.168.100.7: node-1.local.lan
+      192.168.100.6: nodes-arm-6
 
   tasks:
   - name: Expand volumes
