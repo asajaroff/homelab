@@ -1,11 +1,11 @@
-DOCKER_BIN				?= podman
-DOCKER_MOUNT 			:= $(PWD):/home/ansible-user/workdir
-DOKCER_ANSIBLE_BIN 		:=  podman run -v $(DOCKER_MOUNT) -v ${HOME}/.ssh:/home/ansible-user/.ssh localhost/asajaroff/ansible-bin:0.0.1
+DOCKER_BIN		?= podman
+DOCKER_MOUNT 		:= $(PWD):/home/ansible-user/workdir
+DOKCER_ANSIBLE_BIN 	:=  podman run -v $(DOCKER_MOUNT) -v ${HOME}/.ssh:/home/ansible-user/.ssh localhost/asajaroff/ansible-bin:0.0.1
 # TODO Make ansible properly work in a container error=(provided hosts list is empty, only localhost is available. Note that the implicit localhost does not match 'all')
 # ANSIBLE_BIN = podman run -v $(DOCKER_MOUNT) -v ${HOME}/.ssh:/home/ansible-user/.ssh localhost/asajaroff/ansible-bin:0.0.1
-ANSIBLE_BIN 			:= ansible
+ANSIBLE_BIN 		:= ansible
 ANSIBLE_PLAYBOOK_BIN 	:= ansible-playbook
-INVENTORY 				?= inventory.yaml
+INVENTORY 		?= inventory.yaml
 
 .DEFAULT_GOAL: help
 .PHONY: all
