@@ -1,0 +1,16 @@
+#+title: K3S Setup
+
+* Raspbian installation
+
+** Non automated
+  Download disk image and install by running:
+  #+BEGIN_SRC shell
+    xzcat ~/Downloads/2022-04-04-raspios-bullseye-arm64-lite.img.xz | sudo dd of=/dev/mmcblk0 bs=4M status=progress && sudo sync 
+  #+END_SRC
+
+** Master install
+#+BEGIN_SRC shell
+curl -sfL https://get.k3s.io | INSTALL_K3S_CHANNEL=latest sh -
+#+END_SRC
+
+** Add master
