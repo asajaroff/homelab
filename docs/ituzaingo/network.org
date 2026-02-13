@@ -1,0 +1,73 @@
+#+title:  Ituzaingo Network
+#+author: asajaroff
+#+date:   2025-02-13
+
+* Network Overview
+
+Ituzaingo environment network design based on Ubiquiti hardware with VLAN segmentation.
+
+** Hardware
+
+| Device                        | Role              |
+|-------------------------------+-------------------|
+| Ubiquiti Cloud Gateway Max    | Firewall / Router |
+| Ubiquiti Lite 16 PoE Switch   | Core Switch       |
+| Ubiquiti U7 Pro Access Point  | WiFi              |
+
+** VLANs
+
+| VLAN | Name       | Subnet            | Purpose                    |
+|------+------------+-------------------+----------------------------|
+|    1 | Management | 192.168.80.0/24   | Network device management  |
+|   10 | Videocams  | 192.168.81.0/24   | Security cameras (isolated)|
+|   20 | WiFi       | 192.168.82.0/24   | Wireless clients           |
+|   30 | Servers    | 192.168.83.0/24   | NAS and server             |
+
+** Diagram
+
+#+begin_src mermaid
+graph TD
+    ISP((Internet / ISP))
+
+    subgraph Ituzaingo["Ituzaingo Network"]
+        CGM[Ubiquiti Cloud Gateway Max<br/>Firewall / Router<br/>192.168.80.1]
+
+        subgraph Switch["Ubiquiti Lite 16 PoE Switch"]
+            MGMT["VLAN 1 — Management<br/>192.168.80.0/24"]
+            VLAN10["VLAN 10 — Videocams<br/>192.168.81.0/24"]
+            VLAN20["VLAN 20 — WiFi Clients<br/>192.168.82.0/24"]
+            VLAN30["VLAN 30 — Servers<br/>192.168.83.0/24"]
+        end
+
+        subgraph Cameras["Videocams — VLAN 10"]
+            CAM1[Camera 1]
+            CAM2[Camera 2]
+            CAMn[Camera N]
+        end
+
+        subgraph WiFi["WiFi — VLAN 20"]
+            AP[Ubiquiti U7 Pro<br/>Access Point]
+            CLIENT1[WiFi Client 1]
+            CLIENTn[WiFi Client N]
+        end
+
+        subgraph Servers["Servers — VLAN 30"]
+            NAS[NAS]
+            SRV[Server]
+        end
+    end
+
+    ISP --- CGM
+    CGM --- Switch
+    VLAN10 --- CAM1 & CAM2 & CAMn
+    VLAN20 --- AP
+    AP -.-|wireless| CLIENT1 & CLIENTn
+    VLAN30 --- NAS & SRV
+#+end_src
+
+** Firewall Considerations
+
+- VLAN 10 (Videocams): Block internet access, allow traffic only to NAS on VLAN 30 (NVR port)
+- VLAN 20 (WiFi): Standard internet access, isolated from VLAN 10 and VLAN 30
+- VLAN 30 (Servers): Restricted internet access, accept inbound from VLAN 10 on NVR ports
+- Management VLAN: Accessible only from trusted devices

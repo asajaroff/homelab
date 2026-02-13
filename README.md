@@ -49,7 +49,8 @@ make -C src ping INVENTORY=../ansible/inventories/amsterdam.yaml
 | Environment | Inventory | Networks |
 |---|---|---|
 | K3S cluster | `src/inventory.yaml` | 192.168.100.0/24, 192.168.20.0/24 |
-| Amsterdam | `ansible/inventories/amsterdam.yaml` | 192.168.1.0/24 |
+| Amsterdam | `ansible/inventories/amsterdam.yaml` | 192.168.60.0/24 |
+| Ituzaingo | `ansible/inventories/ituzaingo.yaml` | 192.168.80.0/24 |
 
 ## Containers
 
