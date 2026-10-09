@@ -1,0 +1,14 @@
+---
+- name: Bootstrap adminera user and sudo access
+  hosts: xcp-ng
+  gather_facts: no
+  vars:
+    ansible_user: root
+  roles:
+    - bootstrap
+
+- name: Physical host baseline
+  hosts: xcp-ng
+  gather_facts: no
+  roles:
+    - physical-host

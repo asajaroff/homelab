@@ -1,0 +1,11 @@
+---
+template_name: Ubuntu 24.04 cloud-init
+template_image_url: https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img
+template_sr_name: Local storage
+template_disk_gb: 10
+template_vcpus: 2
+template_memory_gb: 2
+# Needs virt-customize (libguestfs) on the controller.
+template_install_guest_agent: true
+template_cache_dir: ~/.cache/xcp-template
+template_remote_dir: /var/tmp

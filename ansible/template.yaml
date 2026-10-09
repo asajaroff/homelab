@@ -1,0 +1,6 @@
+---
+- name: Build cloud-init VM template
+  hosts: aurora
+  gather_facts: no
+  roles:
+    - cloud-template

@@ -1,0 +1,8 @@
+---
+adminera_user: adminera
+adminera_pubkey: "{{ lookup('env', 'HOME') }}/.ssh/boleadoras.pem.pub"
+
+bootstrap_python_install_dir: /opt/ansible-python
+bootstrap_python_version: "3.12.14"
+bootstrap_python_release: "20260924"
+bootstrap_python_url: "https://github.com/astral-sh/python-build-standalone/releases/download/{{ bootstrap_python_release }}/cpython-{{ bootstrap_python_version }}+{{ bootstrap_python_release }}-x86_64-unknown-linux-gnu-install_only.tar.gz"
