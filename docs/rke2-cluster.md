@@ -105,7 +105,7 @@ flowchart LR
     vm --> grafana[Grafana]
     vl --> grafana
     am --> grafana
-    traefik[Traefik ingress] --> grafana
+    gw[Gateway homelab<br/>Traefik :80] -->|HTTPRoute| grafana
 ```
 
 ### Install or upgrade
@@ -123,9 +123,21 @@ helm upgrade --install vmstack . -n monitoring
 
 ### Grafana
 
-- URL: `http://grafana.192.168.80.212.nip.io` (Traefik ingress)
+- URL: `http://grafana.192.168.80.212.nip.io` (Gateway API, see below)
 - User: `admin`, password in `~/.kube/grafana-admin-password` and the `grafana-admin` secret
-- `nip.io` is a public wildcard DNS service: the name resolves to the IP inside it. It needs internet DNS and is plain HTTP. Replace with a real name in `values.yaml` (`grafana.ingress.hosts`) when there is one.
+- `nip.io` is a public wildcard DNS service: the name resolves to the IP inside it. It needs internet DNS and is plain HTTP. Replace with a real name in `values.yaml` (`grafanaRoute.host`) when there is one.
+
+### Gateway API
+
+Traefik's Gateway provider is enabled by [traefik-helmchartconfig.yaml](../gitops/rke2/traefik-helmchartconfig.yaml), which creates the `traefik` GatewayClass. The shared `homelab` Gateway ([gateway.yaml](../gitops/rke2/gateway.yaml), `kube-system`, listener port 8000 = Traefik's `web` entrypoint) accepts routes from all namespaces. The chart's `HTTPRoute` points at it. Apply both manifests before installing `vmstack`:
+
+```shell
+kubectl apply -f gitops/rke2/traefik-helmchartconfig.yaml   # restarts Traefik
+kubectl wait --for=condition=Accepted gatewayclass/traefik
+kubectl apply -f gitops/rke2/gateway.yaml
+```
+
+New apps: add an `HTTPRoute` with `parentRefs` to `homelab` in `kube-system`. HTTP only for now, no TLS listener.
 
 ## Gotchas
 
