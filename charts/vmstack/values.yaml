@@ -1,5 +1,13 @@
 # Install as release "vmstack" in namespace "monitoring" (service names below depend on it).
 
+# Grafana via Gateway API (Gateway defined in gitops/rke2/gateway.yaml).
+grafanaRoute:
+  enabled: true
+  host: grafana.192.168.80.212.nip.io
+  gateway:
+    name: homelab
+    namespace: kube-system
+
 victoria-metrics-k8s-stack:
   # Metrics: single-node VictoriaMetrics.
   vmsingle:
@@ -36,11 +44,6 @@ victoria-metrics-k8s-stack:
       enabled: false
     plugins:
       - victoriametrics-logs-datasource
-    ingress:
-      enabled: true
-      ingressClassName: traefik
-      hosts:
-        - grafana.192.168.80.212.nip.io
 
 victoria-logs-single:
   server:
