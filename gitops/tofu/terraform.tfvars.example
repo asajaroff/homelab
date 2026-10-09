@@ -1,0 +1,25 @@
+xoa_url      = "wss://xoa.lan"
+xoa_insecure = true # self-signed XOA cert
+
+vms = {
+  "test-vm-01" = {
+    pool_name     = "xcp-pool-01"
+    template_name = "Ubuntu 24.04 cloud-init"
+    sr_name       = "Local storage"
+    network_name  = "Pool-wide network 1"
+
+    # Optional, defaults shown
+    cpus      = 2
+    memory_gb = 4
+    disk_gb   = 20
+    tags      = ["homelab"]
+
+    cloud_config = <<-YAML
+      #cloud-config
+      hostname: test-vm-01
+      ssh_authorized_keys:
+        - ssh-ed25519 AAAA... you@host
+    YAML
+    # cloud_network_config = null # null = DHCP
+  }
+}
