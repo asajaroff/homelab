@@ -1,38 +1,47 @@
-#+title:   Node configuration
-#+author: asajaroff@users.noreply.github.com
-#+date:   2022-03-31
+# Node configuration
 
-* Checklist
+## Checklist
 
-** TODO New node steps CHECKLIST
+### TODO New node steps CHECKLIST
+
+```mermaid
+flowchart LR
+    A[Burn image to SD] --> B[Start the machine]
+    B --> C[ssh in, install ansible]
+    C --> D[standard-security runbook]
+    D --> E[k8s-node-security runbook]
+```
+
 - [ ] Burn image to SD storage
 - [ ] Start the machine
 - Once the node is connected into the network, ssh into it
-#+begin_src sh
+
+```sh
 sudo apt update --yes
 sudo apt install software-properties-common --yes
 sudo add-apt-repository --yes --update ppa:ansible/ansible
 sudo apt install ansible --yes
-#+end_src
+```
 
-#+RESULTS:
+- [ ] Run the `standard-security` runbook. This will disable SSH password and root user
+- [ ] Run the `k8s-node-security` runbook. This will give more security
 
-- [ ] Run the `standard-security` runbook
-  This will disable SSH password and root user
-- [ ] Run the `k8s-node-security` runbook
-  This will give more security
+## Operative Systems
 
-* Operative Systems
-** Rocky Linux
+### Rocky Linux
+
 Connect through SSH to the machine
-#+being_src sh
+
+```sh
 ssh rocky@${RASPBERRY_IP_ADDRESS}
 # Default password is `rockylinux`
-#+end_src sh
+```
 
 Once you're in, we need to do a few things
-*** Install updates and Ansible
-#+begin_src sh
+
+#### Install updates and Ansible
+
+```sh
 sudo rootfs-expand # Expand filesystem so that is uses the hole available disk
 sudo dnf update -y
 
@@ -45,29 +54,33 @@ sudo reboot
 # Install ansible
 sudo dnf install -y epel-release
 sudo dnf install ansible -y
-#+end_src
+```
 
-*** Allow ${USER} to run sudo and journalctl without password
-#+begin_src shell
+#### Allow ${USER} to run sudo and journalctl without password
+
+```shell
 EDITOR=vim visudo
 # Uncomment following line:
 %wheel	ALL=(ALL)	NOPASSWD: ALL
-#+end_src
+```
 
-*** Disable firewalld
-#+begin_src shell
+#### Disable firewalld
+
+```shell
 sudo systemctl disable firewalld --now
 sudo systemctl disable nm-cloud-setup.service nm-cloud-setup.timer
 sudo reboot
-#+end_src
+```
 
-*** Create automations user
-#+begin_src sh
+#### Create automations user
+
+```sh
 ssh-keygen -t ed25519 -f ~/.ssh/nodes.local.lan -C "galera@local.lan_Kubernetes"
-#+end_src
+```
 
-*** Setup SSH server
-#+begin_src shell
+#### Setup SSH server
+
+```shell
 sudo systemctl enable sshd --now
 sudo systemctl status sshd.service
 
@@ -76,14 +89,16 @@ mkdir ${HOME}/.ssh
 chmod 700 ~/.ssh
 touch ${HOME}/.ssh/authorized_keys
 chmod 600 ${HOME}/authorized_keys
-#+end_src
+```
 
-*** Install container tools
+#### Install container tools
+
 Run `make init-global-security`
 
-* SSH Keys Creation
-#+begin_src sh
+## SSH Keys Creation
+
+```sh
 # Create key
 ssh-keygen -t ed25519 -f ~/.ssh/nodes.local.lan -C "galera@local.lan_Kubernetes"
 ssh-copy-id rocky@${IP_ADDRESS} ~/.ssh.nodes.local.lan.pub
-#+end_src
+```
