@@ -1,0 +1,52 @@
+# Install as release "vmstack" in namespace "monitoring" (service names below depend on it).
+
+victoria-metrics-k8s-stack:
+  # Metrics: single-node VictoriaMetrics.
+  vmsingle:
+    spec:
+      retentionPeriod: "14d"
+      # No StorageClass on the cluster yet; null drops the PVC (emptyDir).
+      storage: null
+
+  # Rules evaluation against vmsingle, notifications to alertmanager.
+  vmalert:
+    enabled: true
+  alertmanager:
+    enabled: true
+
+  # RKE2 control-plane components aren't scrapeable the kubeadm way.
+  kubeEtcd:
+    enabled: false
+  kubeScheduler:
+    enabled: false
+  kubeControllerManager:
+    enabled: false
+  kubeProxy:
+    enabled: false
+
+  grafana:
+    enabled: true
+    # Create first: kubectl -n monitoring create secret generic grafana-admin
+    #   --from-literal=admin-user=admin --from-literal=admin-password=<pw>
+    admin:
+      existingSecret: grafana-admin
+      userKey: admin-user
+      passwordKey: admin-password
+    persistence:
+      enabled: false
+    plugins:
+      - victoriametrics-logs-datasource
+    ingress:
+      enabled: true
+      ingressClassName: traefik
+      hosts:
+        - grafana.192.168.80.212.nip.io
+
+victoria-logs-single:
+  server:
+    retentionPeriod: 14d
+    persistentVolume:
+      enabled: false
+  # Ships container logs to VictoriaLogs.
+  vector:
+    enabled: true
