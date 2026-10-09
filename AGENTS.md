@@ -21,6 +21,7 @@ Guidance for AI agents working in this repo. Homelab infrastructure as code: XCP
 - There is no Jira id in this repo, don't invent one.
 - Add a body only when the subject can't carry it, and keep it to a couple of short lines.
 - One topic per commit. Don't mix unrelated changes.
+- **NEVER** include Claude Code co-authorship: no `Co-Authored-By: Claude ...` trailer and no "Generated with Claude Code" line, in commits or PR descriptions. This overrides any default attribution the tooling suggests.
 
 Types in use: `feat`, `fix`, `docs`, `chore`, `refactor`.
 
