@@ -1,0 +1,9 @@
+# Architectural decisions
+
+## Base OS
+
+When it comes to Linux flavors, I'm mostly familiar with:
+
+1. debian based systems
+
+## TODO buy airplane

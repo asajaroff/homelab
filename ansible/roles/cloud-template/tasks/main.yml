@@ -1,0 +1,136 @@
+---
+# Builds a cloud-init VM template from an upstream cloud image using xe.
+- name: Look for an existing template
+  ansible.builtin.command: xe template-list name-label="{{ template_name }}" --minimal
+  register: existing
+  changed_when: false
+
+- name: Build template
+  when: existing.stdout | trim == ''
+  block:
+    - name: Check controller tools
+      delegate_to: localhost
+      become: false
+      run_once: true
+      block:
+        - name: Look for required binaries
+          ansible.builtin.command: "which {{ item }}"
+          loop: "{{ ['qemu-img'] + (['virt-customize'] if template_install_guest_agent else []) }}"
+          register: tools
+          changed_when: false
+          failed_when: false
+
+        - name: Fail if any are missing
+          ansible.builtin.assert:
+            that: tools.results | rejectattr('rc', 'eq', 0) | list | length == 0
+            fail_msg: >-
+              Missing on the controller: {{ tools.results | rejectattr('rc', 'eq', 0) | map(attribute='item') | join(', ') }}.
+              Install qemu-img / libguestfs, or pass -e template_install_guest_agent=false to skip virt-customize.
+
+    - name: Prepare image on the controller
+      delegate_to: localhost
+      become: false
+      run_once: true
+      block:
+        - name: Create cache dir
+          ansible.builtin.file:
+            path: "{{ template_cache_dir }}"
+            state: directory
+            mode: "0755"
+
+        - name: Download cloud image
+          ansible.builtin.get_url:
+            url: "{{ template_image_url }}"
+            dest: "{{ template_cache_dir }}/base.img"
+            mode: "0644"
+
+        - name: Work on a copy and grow it to the template disk size
+          ansible.builtin.shell: |
+            set -e
+            cp base.img work.img
+            qemu-img resize work.img {{ template_disk_gb }}G
+          args:
+            chdir: "{{ template_cache_dir }}"
+          changed_when: true
+
+        - name: Install the Xen guest agent into the image
+          when: template_install_guest_agent
+          ansible.builtin.command: >-
+            virt-customize -a work.img
+            --install xe-guest-utilities
+            --run-command 'systemctl enable xe-linux-distribution || true'
+            --run-command 'cloud-init clean --logs'
+          args:
+            chdir: "{{ template_cache_dir }}"
+          changed_when: true
+
+        - name: Convert to a fixed-geometry dynamic VHD
+          ansible.builtin.command: >-
+            qemu-img convert -O vpc -o subformat=dynamic,force_size=on
+            work.img template.vhd
+          args:
+            chdir: "{{ template_cache_dir }}"
+          changed_when: true
+
+    - name: Copy VHD to the host
+      ansible.builtin.copy:
+        src: "{{ template_cache_dir }}/template.vhd"
+        dest: "{{ template_remote_dir }}/template.vhd"
+        mode: "0644"
+
+    - name: Find the storage repository
+      ansible.builtin.command: xe sr-list name-label="{{ template_sr_name }}" --minimal
+      register: sr
+      changed_when: false
+      failed_when: sr.stdout | trim == '' or ',' in sr.stdout
+
+    - name: Create the disk
+      ansible.builtin.command: >-
+        xe vdi-create sr-uuid={{ sr.stdout | trim }}
+        name-label="{{ template_name }}-root" type=user
+        virtual-size={{ template_disk_gb }}GiB
+      register: vdi
+      changed_when: true
+
+    - name: Import the image into the disk
+      ansible.builtin.command: >-
+        xe vdi-import uuid={{ vdi.stdout | trim }}
+        filename={{ template_remote_dir }}/template.vhd format=vhd
+      changed_when: true
+
+    - name: Create the VM from the install-media template
+      ansible.builtin.command: >-
+        xe vm-install template="Other install media"
+        new-name-label="{{ template_name }}" sr-uuid={{ sr.stdout | trim }}
+      register: vm
+      changed_when: true
+
+    - name: Configure UEFI boot and sizing
+      ansible.builtin.shell: |
+        set -e
+        vm={{ vm.stdout | trim }}
+        xe vm-param-set uuid=$vm HVM-boot-policy="BIOS order"
+        xe vm-param-set uuid=$vm HVM-boot-params:firmware=uefi
+        xe vm-param-set uuid=$vm HVM-boot-params:order=c
+        xe vm-param-set uuid=$vm VCPUs-max={{ template_vcpus }}
+        xe vm-param-set uuid=$vm VCPUs-at-startup={{ template_vcpus }}
+        xe vm-memory-limits-set uuid=$vm \
+          static-min={{ template_memory_gb }}GiB static-max={{ template_memory_gb }}GiB \
+          dynamic-min={{ template_memory_gb }}GiB dynamic-max={{ template_memory_gb }}GiB
+      changed_when: true
+
+    - name: Attach the disk
+      ansible.builtin.command: >-
+        xe vbd-create vm-uuid={{ vm.stdout | trim }} vdi-uuid={{ vdi.stdout | trim }}
+        device=0 bootable=true mode=RW type=Disk
+      changed_when: true
+
+    - name: Convert the VM to a template
+      ansible.builtin.command: xe vm-param-set uuid={{ vm.stdout | trim }} is-a-template=true
+      changed_when: true
+
+  always:
+    - name: Remove the VHD from the host
+      ansible.builtin.file:
+        path: "{{ template_remote_dir }}/template.vhd"
+        state: absent

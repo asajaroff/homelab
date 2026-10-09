@@ -1,26 +1,29 @@
-FROM ubuntu:bionic
+FROM debian:trixie-slim
 
-RUN groupadd -r ansible -g 433
-RUN useradd -u 431 -r -g ansible -s /sbin/nologin -c "ARM Container image user" ansible-user
+ARG ANSIBLE_CORE_VERSION=2.21.4
 
-RUN apt update --yes
-RUN apt upgrade --yes
+# linux-image-amd64 gives libguestfs a kernel to build its appliance from.
+RUN apt-get update && apt-get install --yes --no-install-recommends \
+        python3 python3-venv openssh-client ca-certificates curl \
+        qemu-utils libguestfs-tools linux-image-amd64 \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN apt install software-properties-common openssh-client --yes
-RUN add-apt-repository --yes --update ppa:ansible/ansible && \
-	apt install ansible -y
+RUN python3 -m venv /opt/ansible \
+    && /opt/ansible/bin/pip install --no-cache-dir "ansible-core==${ANSIBLE_CORE_VERSION}"
 
-RUN mkdir -p /home/ansible-user/workdir
-RUN chown -v -R ansible-user:ansible /home/ansible-user
+COPY requirements.yml /tmp/requirements.yml
+RUN /opt/ansible/bin/ansible-galaxy collection install \
+        -r /tmp/requirements.yml -p /usr/share/ansible/collections \
+    && rm /tmp/requirements.yml
 
+# uid 1000 so mounted ~/.ssh keys are readable; override with --user if needed.
+RUN useradd --uid 1000 --create-home --shell /bin/bash ansible
 
-USER ansible-user
+ENV PATH=/opt/ansible/bin:$PATH \
+    ANSIBLE_COLLECTIONS_PATH=/usr/share/ansible/collections \
+    LIBGUESTFS_BACKEND=direct
 
-WORKDIR /home/ansible-user/workdir
+USER ansible
+WORKDIR /work
 
-# https://docs.docker.com/engine/reference/builder/#understand-how-cmd-and-entrypoint-interact
-# CMD [ "sh", "-c", "echo", "Hello from ${USER} using CMD in Dockerfile"]
-#
-
-ENTRYPOINT [ "ansible" ]
-CMD ["-version"]
+CMD ["ansible", "--version"]

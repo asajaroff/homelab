@@ -1,0 +1,7 @@
+---
+- name: Ensure sshd is enabled and running
+  ansible.builtin.service:
+    name: sshd
+    enabled: yes
+    state: started
+  become: yes

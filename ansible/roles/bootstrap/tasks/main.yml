@@ -1,0 +1,37 @@
+---
+- name: Check for managed Python interpreter
+  ansible.builtin.raw: test -x {{ bootstrap_python_install_dir }}/bin/python3 && echo present || echo missing
+  register: managed_python_check
+  changed_when: false
+
+- name: Install standalone Python {{ bootstrap_python_version }}
+  when: "'missing' in managed_python_check.stdout"
+  ansible.builtin.raw: >
+    curl -fsSL -o /tmp/python-standalone.tar.gz '{{ bootstrap_python_url }}' &&
+    mkdir -p {{ bootstrap_python_install_dir }} &&
+    tar -xzf /tmp/python-standalone.tar.gz -C {{ bootstrap_python_install_dir }} --strip-components=1 &&
+    rm -f /tmp/python-standalone.tar.gz &&
+    echo changed
+  register: python_install
+  changed_when: "'changed' in python_install.stdout"
+
+- name: Ensure {{ adminera_user }} user exists
+  ansible.builtin.user:
+    name: "{{ adminera_user }}"
+    shell: /bin/bash
+    create_home: yes
+
+- name: Deploy SSH key for {{ adminera_user }}
+  ansible.posix.authorized_key:
+    user: "{{ adminera_user }}"
+    state: present
+    key: "{{ lookup('file', adminera_pubkey) }}"
+
+- name: Grant {{ adminera_user }} passwordless sudo
+  ansible.builtin.copy:
+    content: "{{ adminera_user }} ALL=(ALL) NOPASSWD: ALL\n"
+    dest: "/etc/sudoers.d/{{ adminera_user }}"
+    owner: root
+    group: root
+    mode: '0440'
+    validate: /usr/sbin/visudo -cf %s

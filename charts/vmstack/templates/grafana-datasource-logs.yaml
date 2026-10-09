@@ -1,0 +1,17 @@
+# Picked up by the Grafana datasource sidecar (label grafana_datasource).
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-grafana-ds-victorialogs
+  namespace: {{ .Release.Namespace }}
+  labels:
+    grafana_datasource: "1"
+data:
+  victorialogs.yaml: |-
+    apiVersion: 1
+    datasources:
+      - name: VictoriaLogs
+        type: victoriametrics-logs-datasource
+        uid: VictoriaLogs
+        access: proxy
+        url: http://{{ .Release.Name }}-victoria-logs-single-server.{{ .Release.Namespace }}.svc:9428

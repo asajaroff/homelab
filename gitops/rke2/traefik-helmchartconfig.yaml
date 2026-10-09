@@ -1,0 +1,14 @@
+# Enables Traefik's Gateway API provider (creates the "traefik" GatewayClass).
+apiVersion: helm.cattle.io/v1
+kind: HelmChartConfig
+metadata:
+  name: rke2-traefik
+  namespace: kube-system
+spec:
+  valuesContent: |-
+    providers:
+      kubernetesGateway:
+        enabled: true
+    # The Gateway is defined in gateway.yaml instead of by the chart.
+    gateway:
+      enabled: false

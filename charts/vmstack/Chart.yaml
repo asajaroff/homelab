@@ -1,0 +1,12 @@
+apiVersion: v2
+name: vmstack
+description: VictoriaMetrics metrics, VictoriaLogs, vmalert and Grafana for the homelab RKE2 cluster
+type: application
+version: 0.1.0
+dependencies:
+  - name: victoria-metrics-k8s-stack
+    version: 0.95.2
+    repository: https://victoriametrics.github.io/helm-charts
+  - name: victoria-logs-single
+    version: 0.13.10
+    repository: https://victoriametrics.github.io/helm-charts

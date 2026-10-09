@@ -1,0 +1,83 @@
+# UNIX security standards
+
+## Automation and general configuration
+
+### TODO find a way to manage:
+
+- Bare metal
+- Raspberry
+- Xen server VMs
+- Kubernetes managment overal
+- Virtual servers and networks
+- pfSense
+- DNS
+
+## General
+
+- MISSING:
+  - SSH allow only non-root login with unprivileged user, escalete from there.
+  - Standard port for SSH servers
+
+- [ ] Generate sshd_config template
+- [ ] Automate user creation process
+- [ ] Ansible script for user creation for Generic OS
+
+## Softare
+
+Install on all:
+
+- [ ] ssh
+- [ ] neovim or neovim
+- [ ] git
+- [ ] yq
+- [ ] net-tools
+- [ ] build-essentials
+- [ ] dns-utils
+- [ ] cloud-clis
+  - [ ] aws
+  - [ ] azure
+  - [ ] gcp
+  - [ ] linode
+
+### Adding users
+
+```
+useradd adminera \
+    --uid 1001 \
+    --create-home \
+    --shell /bin/bash \
+    --user-group \
+    --groups wheel,adm,bin,disk
+```
+
+### Closing the box
+
+- Create administrative non-root user
+
+  ```
+  useradd adminera \
+      --uid 1001 \
+      --create-home \
+      --shell /bin/bash \
+      --user-group \
+      --groups wheel,adm,bin,disk
+  ```
+
+- Add authorized key to user
+
+  ```shell
+  mkdir -p ~/.ssh && chmod 700 ~/.ssh && touch ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys && echo "ssh-rsa KEYGOESHERE user@remotehost or note" >> ~/.ssh/authorized_keys
+  ```
+
+```
+sudo iptables -I INPUT -p tcp --dport 22 -s 192.168.20.0/24 -j ACCEPT
+sudo iptables -I INPUT -p tcp --dport 22 -s 192.168.20.0/24 -j ACCEPT
+```
+
+## Shell environment
+
+- MISSING:
+  - [ ] Generate repo for homelab dotfiles (root and user)
+    - [ ] Bash configuration files
+
+## Documentation

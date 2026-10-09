@@ -1,7 +1,0 @@
----
-- name: Power off playbook
-  hosts: k3s
-  tasks:
-    - name: shutdown
-      command: /sbin/shutdown -h now
-      become: yes
